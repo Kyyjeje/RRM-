@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Kenangan Perpisahan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ========== CSS RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --text-primary: #f5f0eb;
+            --text-secondary: #a8a09a;
+            --accent: #e8c9b0;
+            --accent-glow: rgba(232, 201, 176, 0.15);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            overflow-x: hidden;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+        /* ========== BACKGROUND EFFECT ========== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(232, 201, 176, 0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(232, 201, 176, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ========== PARTIKEL CANVAS ========== */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ========== JAM & HARI (STICKY KIRI ATAS) ========== */
+        .datetime-sticky {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px 18px;
+            min-width: 140px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .datetime-sticky:hover {
+            border-color: var(--accent);
+            box-shadow: 0 8px 40px rgba(232, 201, 176, 0.08);
+        }
+
+        .datetime-sticky .time {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            line-height: 1.2;
+        }
+
+        .datetime-sticky .time .seconds {
+            font-size: 1rem;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+
+        .datetime-sticky .date {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-top: 2px;
+            opacity: 0.7;
+        }
+
+        .datetime-sticky .day {
+            font-size: 0.55rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-top: 2px;
+            opacity: 0.6;
+        }
+
+        /* ========== OVERLAY SAMBUTAN ========== */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1.2s cubic-bezier(0.65, 0, 0.35, 1),
+                        visibility 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .welcome-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .welcome-content {
+            text-align: center;
+            padding: 40px 30px;
+            max-width: 500px;
+            animation: welcomeFadeIn 1.5s ease forwards;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes welcomeFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .welcome-content .ornament {
+            font-size: 2rem;
+            color: var(--accent);
+            opacity: 0.6;
+            letter-spacing: 10px;
+            margin-bottom: 16px;
+            font-family: var(--font-display);
+        }
+
+        .welcome-content h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #f5f0eb 0%, #e8c9b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .welcome-content .sub-welcome {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .welcome-content .divider-line {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            margin: 16px auto;
+            opacity: 0.5;
+        }
+
+        .welcome-content p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+        }
+
+        .welcome-content .enter-btn {
+            background: transparent;
+            border: 1px solid rgba(232, 201, 176, 0.3);
+            color: var(--accent);
+            padding: 12px 40px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            font-family: var(--font-body);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-content .enter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(232, 201, 176, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .welcome-content .enter-btn:hover::before {
+            left: 100%;
+        }
+
+        .welcome-content .enter-btn:hover {
+            background: rgba(232, 201, 176, 0.08);
+            border-color: var(--accent);
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(232, 201, 176, 0.05);
+        }
+
+        .welcome-content .enter-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ========== MAIN CONTAINER ========== */
+        .container {
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            text-align: center;
+            padding: 20px 0 30px;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.5;
+        }
+
+        .header .date {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #f5f0eb 0%, #e8c9b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .header .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 6px;
+            margin-top: 6px;
+            text-transform: uppercase;
+        }
+
+        /* ========== KOLOM "PERPISAHAN" DI TENGAH ========== */
+        .farewell-center {
+            text-align: center;
+            padding: 30px 20px;
+            margin: 10px 0 20px;
+            position: relative;
+        }
+
+        .farewell-center .big-text {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 400;
+            letter-spacing: 8px;
+            background: linear-gradient(135deg, #f5f0eb 0%, #e8c9b0 50%, #d4a889 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            text-shadow: 0 0 60px rgba(232, 201, 176, 0.1);
+            animation: fadeInScale 1.2s ease forwards;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .farewell-center .sub-text-center {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-top: 8px;
+            opacity: 0.5;
+            animation: fadeInUp 1.2s ease 0.3s both;
+        }
+
+        .farewell-center .ornament-line {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0 4px;
+        }
+
+        .farewell-center .ornament-line .line {
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+        }
+
+        .farewell-center .ornament-line .diamond {
+            color: var(--accent);
+            opacity: 0.3;
+            font-size: 0.6rem;
+        }
+
+        /* ========== SLIDESHOW ========== */
+        .slideshow-wrapper {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            margin: 20px 0 16px;
+            background: var(--bg-secondary);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .slideshow-track {
+            display: flex;
+            transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+            will-change: transform;
+        }
+
+        .slide {
+            min-width: 100%;
+            position: relative;
+            aspect-ratio: 4/3;
+            background: var(--bg-card);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.8s ease;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .slide:hover img {
+            transform: scale(1.03);
+        }
+
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 40px 24px 24px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0.85));
+            pointer-events: none;
+        }
+
+        .slide-caption {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #fff;
+            letter-spacing: 0.5px;
+            line-height: 1.5;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+
+        .slide-caption small {
+            display: block;
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* ========== MUSIC CONTROL ========== */
+        .music-control {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--accent);
+            font-size: 1.2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            border-color: var(--accent);
+            background: rgba(30, 30, 30, 0.9);
+        }
+
+        .music-control.visible {
+            display: flex;
+        }
+
+        .music-control .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .music-control.paused .icon {
+            transform: scale(0.8);
+        }
+
+        .music-control .tooltip {
+            position: absolute;
+            bottom: 60px;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.6rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .music-control:hover .tooltip {
+            opacity: 1;
+        }
+
+        /* ========== NAVIGASI ========== */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 0 4px;
+        }
+
+        .controls-left,
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            backdrop-filter: blur(10px);
+            font-family: var(--font-body);
+        }
+
+        .nav-btn:hover {
+            background: rgba(232, 201, 176, 0.1);
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: scale(1.05);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* ========== INDICATOR DOTS ========== */
+        .indicators {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+            padding: 0;
+        }
+
+        .dot.active {
+            background: var(--accent);
+            width: 28px;
+            border-radius: 4px;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .dot:hover {
+            background: rgba(232, 201, 176, 0.4);
+        }
+
+        .dot.active:hover {
+            background: var(--accent);
+        }
+
+        /* ========== COUNTER ========== */
+        .slide-counter {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 2px;
+            min-width: 40px;
+            text-align: center;
+            font-family: var(--font-body);
+        }
+
+        .slide-counter span {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* ========== PESAN UTAMA ========== */
+        .message-section {
+            margin: 28px 0 8px;
+            padding: 24px 20px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .message-section::before {
+            content: '✦';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent);
+            font-size: 0.8rem;
+            background: var(--bg-primary);
+            padding: 0 12px;
+            opacity: 0.5;
+        }
+
+        .message-section p {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 400;
+            line-height: 1.4;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+        }
+
+        .message-section .highlight {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .message-section .sub-text {
+            display: block;
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* ========== TERIMA KASIH SUPPORT (1 FOTO) ========== */
+        .support-section {
+            margin: 30px 0 16px;
+            padding: 28px 20px 24px;
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .support-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(232, 201, 176, 0.03), transparent 70%);
+            pointer-events: none;
+        }
+
+        .support-header {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .support-header .heart-icon {
+            font-size: 1.8rem;
+            color: var(--accent);
+            opacity: 0.6;
+            display: block;
+            margin-bottom: 6px;
+            animation: heartBeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.1); }
+            60% { transform: scale(1); }
+        }
+
+        .support-header h3 {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .support-header .support-sub {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-top: 4px;
+        }
+
+        .support-single {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .support-single .support-photo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--border-color);
+            transition: all 0.5s ease;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .support-single .support-photo:hover {
+            border-color: var(--accent);
+            transform: scale(1.05) rotate(-2deg);
+            box-shadow: 0 12px 40px rgba(232, 201, 176, 0.15);
+        }
+
+        .support-single .support-photo:active {
+            transform: scale(0.95);
+        }
+
+        .support-single .support-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .support-single .support-photo:hover img {
+            transform: scale(1.08);
+        }
+
+        .support-single .support-photo::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+
+        .support-single .support-photo:hover::after {
+            border-color: rgba(232, 201, 176, 0.2);
+            box-shadow: 0 0 40px rgba(232, 201, 176, 0.05);
+        }
+
+        .support-single .support-info {
+            text-align: center;
+        }
+
+        .support-single .support-name {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .support-single .support-role {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .support-single .support-message {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-weight: 300;
+            max-width: 300px;
+            margin-top: 4px;
+        }
+
+        .support-single .support-divider {
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            margin: 8px auto 0;
+            opacity: 0.3;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            text-align: center;
+            padding: 20px 0 8px;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            border-top: 1px solid var(--border-color);
+            margin-top: 16px;
+            font-family: var(--font-body);
+        }
+
+        .footer span {
+            color: var(--accent);
+            opacity: 0.7;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+                padding-top: 80px;
+            }
+
+            .datetime-sticky {
+                top: 12px;
+                left: 12px;
+                padding: 10px 14px;
+                min-width: 110px;
+            }
+
+            .datetime-sticky .time {
+                font-size: 1.2rem;
+            }
+
+            .datetime-sticky .time .seconds {
+                font-size: 0.8rem;
+            }
+
+            .datetime-sticky .date {
+                font-size: 0.55rem;
+            }
+
+            .datetime-sticky .day {
+                font-size: 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header .subtitle {
+                font-size: 0.7rem;
+                letter-spacing: 4px;
+            }
+
+            .farewell-center .big-text {
+                font-size: 2.5rem;
+                letter-spacing: 5px;
+            }
+
+            .slide-caption {
+                font-size: 1rem;
+            }
+
+            .message-section p {
+                font-size: 1.4rem;
+            }
+
+            .nav-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+            }
+
+            .controls {
+                gap: 8px;
+            }
+
+            .slide-overlay {
+                padding: 30px 16px 16px;
+            }
+
+            .welcome-content h1 {
+                font-size: 2.2rem;
+            }
+
+            .welcome-content .sub-welcome {
+                font-size: 0.9rem;
+            }
+
+            .welcome-content p {
+                font-size: 0.85rem;
+            }
+
+            .welcome-content .enter-btn {
+                padding: 10px 30px;
+                font-size: 0.75rem;
+            }
+
+            .music-control {
+                bottom: 20px;
+                right: 20px;
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+            }
+
+            .support-single .support-photo {
+                width: 120px;
+                height: 120px;
+            }
+
+            .support-header h3 {
+                font-size: 1.2rem;
+            }
+
+            .support-single .support-name {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .datetime-sticky {
+                top: 8px;
+                left: 8px;
+                padding: 8px 12px;
+                min-width: 90px;
+                border-radius: 12px;
+            }
+
+            .datetime-sticky .time {
+                font-size: 1rem;
+            }
+
+            .datetime-sticky .time .seconds {
+                font-size: 0.7rem;
+            }
+
+            .datetime-sticky .date {
+                font-size: 0.5rem;
+            }
+
+            .datetime-sticky .day {
+                font-size: 0.45rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .farewell-center .big-text {
+                font-size: 2rem;
+                letter-spacing: 4px;
+            }
+
+            .message-section p {
+                font-size: 1.2rem;
+            }
+
+            .slide-caption {
+                font-size: 0.85rem;
+            }
+
+            .nav-btn {
+                width: 34px;
+                height: 34px;
+                font-size: 0.8rem;
+            }
+
+            .welcome-content h1 {
+                font-size: 1.8rem;
+            }
+
+            .support-single .support-photo {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        /* ========== ANIMASI MASUK ========== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .farewell-center {
+            animation: fadeInUp 0.8s ease 0.1s both;
+        }
+
+        .slideshow-wrapper {
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .controls {
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .message-section {
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .support-section {
+            animation: fadeInUp 0.8s ease 0.5s both;
+        }
+
+        .footer {
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        /* ========== PROGRESS BAR ========== */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent));
+            transition: width 0.1s linear;
+            z-index: 2;
+            opacity: 0.5;
+        }
+
+        /* ========== SWIPE HINT ========== */
+        .swipe-hint {
+            display: none;
+            text-align: center;
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            opacity: 0.3;
+            margin-top: 4px;
+            font-family: var(--font-body);
+        }
+
+        @media (pointer: coarse) {
+            .swipe-hint {
+                display: block;
+            }
+        }
+
+        /* ========== MUSIC LOADING ========== */
+        .music-loading {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .music-loading.visible {
+            display: flex;
+        }
+
+        .music-loading .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== JAM & HARI STICKY KIRI ATAS ===== -->
+    <div class="datetime-sticky" id="datetimeSticky">
+        <div class="time" id="timeDisplay">
+            <span id="hours">00</span>:<span id="minutes">00</span>
+            <span class="seconds" id="seconds">00</span>
+        </div>
+        <div class="date" id="dateDisplay">00/00/0000</div>
+        <div class="day" id="dayDisplay">Hari</div>
+    </div>
+
+    <!-- ===== PARTIKEL CANVAS ===== -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ===== OVERLAY SAMBUTAN ===== -->
+    <div class="welcome-overlay" id="welcomeOverlay">
+        <div class="welcome-content">
+            <div class="ornament">✦ ✦ ✦</div>
+            <h1>Selamat Datang</h1>
+            <div class="sub-welcome">— Keluarga Ku —</div>
+            <div class="divider-line"></div>
+            <p>
+                Di sini kami menyimpan kenangan indah<br>
+                yang akan selalu hidup dalam hati.<br>
+                <span style="color: var(--accent); opacity: 0.6; font-size: 0.8rem;">
+                    — untuk semua momen yang tak terlupakan —
+                </span>
+            </p>
+            <button class="enter-btn" id="enterBtn">Mulai Kenangan</button>
+        </div>
+    </div>
+
+    <!-- ===== MUSIC LOADING ===== -->
+    <div class="music-loading" id="musicLoading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- ===== MUSIC CONTROL ===== -->
+    <div class="music-control" id="musicControl">
+        <span class="icon">🔊</span>
+        <span class="tooltip">Klik untuk pause/play</span>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container" id="mainContainer">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <div class="date">— kenangan abadi —</div>
+            <h1>Perpisahan</h1>
+            <div class="subtitle">untuk masa lalu yang indah</div>
+        </header>
+
+        <!-- ===== KOLOM "PERPISAHAN" DI TENGAH ===== -->
+        <div class="farewell-center">
+            <div class="big-text">Perpisahan</div>
+            <div class="ornament-line">
+                <span class="line"></span>
+                <span class="diamond">◆</span>
+                <span class="line"></span>
+            </div>
+            <div class="sub-text-center">— akhir dari sebuah perjalanan —</div>
+        </div>
+
+        <!-- ===== SLIDESHOW ===== -->
+        <div class="slideshow-wrapper" id="slideshowWrapper">
+            <div class="progress-bar" id="progressBar"></div>
+
+            <div class="slideshow-track" id="slidesTrack">
+
+                <!-- Slide 1 -->
+                <div class="slide" data-index="0">
+                    <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=600&fit=crop" alt="Kenangan 1" loading="lazy" draggable="false">
+                    <div class="slide-overlay">
+                        <div class="slide-caption">
+                            Senja terakhir bersama
+                            <small>— langit semburat jingga —</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="slide" data-index="1">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop" alt="Kenangan 2" loading="lazy" draggable="false">
+                    <div class="slide-overlay">
+                        <div class="slide-caption">
+                            Tawa di sela perjalanan
+                            <small>— takkan kulupakan —</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="slide" data-index="2">
+                    <img src="https://images.unsplash.com/photo-1470071459604-7b7ec5fa2a3c?w=800&h=600&fit=crop" alt="Kenangan 3" loading="lazy" draggable="false">
+                    <div class="slide-overlay">
+                        <div class="slide-caption">
+                            Jalan setapak bersama
+                            <small>— kenangan yang tak pernah pudar —</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 4 -->
+                <div class="slide" data-index="3">
+                    <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=600&fit=crop" alt="Kenangan 4" loading="lazy" draggable="false">
+                    <div class="slide-overlay">
+                        <div class="slide-caption">
+                            Secangkir kopi dan cerita
+                            <small>— yang tak pernah berakhir —</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 5 -->
+                <div class="slide" data-index="4">
+                    <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&h=600&fit=crop" alt="Kenangan 5" loading="lazy" draggable="false">
+                    <div class="slide-overlay">
+                        <div class="slide-caption">
+                            Pelukan hangat terakhir
+                            <small>— selamat jalan, teman —</small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== CONTROLS ===== -->
+        <div class="controls">
+            <div class="controls-left">
+                <button class="nav-btn" id="prevBtn" aria-label="Sebelumnya">‹</button>
+            </div>
+
+            <div class="indicators" id="indicators"></div>
+
+            <div class="controls-right">
+                <span class="slide-counter">
+                    <span id="currentSlide">1</span>/<span id="totalSlides">5</span>
+                </span>
+                <button class="nav-btn" id="nextBtn" aria-label="Berikutnya">›</button>
+            </div>
+        </div>
+
+        <!-- ===== SWIPE HINT ===== -->
+        <div class="swipe-hint">↔ geser untuk navigasi</div>
+
+        <!-- ===== MESSAGE ===== -->
+        <section class="message-section">
+            <p>
+                sampai jumpa <br>
+                di <span class="highlight">lain waktu</span>
+                <span class="sub-text">— terima kasih untuk semua momen —</span>
+            </p>
+        </section>
+
+        <!-- ===== TERIMA KASIH SUPPORT (1 FOTO) ===== -->
+        <section class="support-section">
+            <div class="support-header">
+                <span class="heart-icon">♥</span>
+                <h3>Terima Kasih Support</h3>
+                <div class="support-sub">— untuk semua yang telah mendukung —</div>
+            </div>
+
+            <div class="support-single">
+                <div class="support-photo" id="supportPhoto">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" alt="Support" loading="lazy">
+                </div>
+                <div class="support-info">
+                    <div class="support-name">Keluarga Tercinta</div>
+                    <span class="support-role">Support Utama</span>
+                    <div class="support-divider"></div>
+                    <div class="support-message">
+                        Terima kasih atas semua cinta, doa, dan dukungan yang tak pernah henti.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="footer">
+            <span>✦</span> forever in frame <span>✦</span>
+        </footer>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ================ JAVASCRIPT ================ -->
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // =====================
+            // JAM & HARI REAL-TIME
+            // =====================
+            function updateDateTime() {
+                var now = new Date();
+                
+                // Jam
+                var hours = String(now.getHours()).padStart(2, '0');
+                var minutes = String(now.getMinutes()).padStart(2, '0');
+                var seconds = String(now.getSeconds()).padStart(2, '0');
+                
+                document.getElementById('hours').textContent = hours;
+                document.getElementById('minutes').textContent = minutes;
+                document.getElementById('seconds').textContent = seconds;
+                
+                // Tanggal
+                var day = String(now.getDate()).padStart(2, '0');
+                var month = String(now.getMonth() + 1).padStart(2, '0');
+                var year = now.getFullYear();
+                document.getElementById('dateDisplay').textContent = day + '/' + month + '/' + year;
+                
+                // Hari
+                var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                document.getElementById('dayDisplay').textContent = days[now.getDay()];
+            }
+            
+            // Update setiap detik
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+
+            // =====================
+            // PARTIKEL BACKGROUND (Canvas)
+            // =====================
+            var canvas = document.getElementById('particles-canvas');
+            var ctx = canvas.getContext('2d');
+            var particles = [];
+            var mouseX = null;
+            var mouseY = null;
+            var animationId = null;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            var colors = [
+                'rgba(232, 201, 176, 0.6)',
+                'rgba(232, 201, 176, 0.4)',
+                'rgba(245, 240, 235, 0.3)',
+                'rgba(200, 180, 160, 0.5)',
+                'rgba(255, 215, 180, 0.3)'
+            ];
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.speedY = (Math.random() - 0.5) * 0.5;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                    this.pulseSpeed = Math.random() * 0.02 + 0.005;
+                    this.pulsePhase = Math.random() * Math.PI * 2;
+                    this.originalSize = this.size;
+                }
+
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+
+                    this.pulsePhase += this.pulseSpeed;
+                    this.opacity = 0.3 + Math.sin(this.pulsePhase) * 0.2 + 0.2;
+                    this.size = this.originalSize + Math.sin(this.pulsePhase) * 0.5;
+
+                    if (mouseX !== null && mouseY !== null) {
+                        var dx = this.x - mouseX;
+                        var dy = this.y - mouseY;
+                        var distance = Math.sqrt(dx * dx + dy * dy);
+                        var maxDist = 150;
+                        
+                        if (distance < maxDist && distance > 0) {
+                            var force = (maxDist - distance) / maxDist * 0.5;
+                            var angle = Math.atan2(dy, dx);
+                            this.x += Math.cos(angle) * force;
+                            this.y += Math.sin(angle) * force;
+                            this.speedX += Math.cos(angle) * force * 0.02;
+                            this.speedY += Math.sin(angle) * force * 0.02;
+                        }
+                    }
+
+                    var maxSpeed = 1;
+                    var currentSpeed = Math.sqrt(this.speedX * this.speedX + this.speedY * this.speedY);
+                    if (currentSpeed > maxSpeed) {
+                        this.speedX = (this.speedX / currentSpeed) * maxSpeed;
+                        this.speedY = (this.speedY / currentSpeed) * maxSpeed;
+                    }
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color.replace('0.6', this.opacity).replace('0.4', this.opacity).replace('0.3', this.opacity).replace('0.5', this.opacity);
+                    ctx.fill();
+                    
+                    if (this.size > 2) {
+                        ctx.shadowColor = 'rgba(232, 201, 176, 0.1)';
+                        ctx.shadowBlur = 10;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+            }
+
+            var particleCount = Math.min(120, Math.floor((window.innerWidth * window.innerHeight) / 8000));
+            for (var i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            function drawLines() {
+                for (var i = 0; i < particles.length; i++) {
+                    for (var j = i + 1; j < particles.length; j++) {
+                        var dx = particles[i].x - particles[j].x;
+                        var dy = particles[i].y - particles[j].y;
+                        var distance = Math.sqrt(dx * dx + dy * dy);
+                        var maxDist = 120;
+                        
+                        if (distance < maxDist) {
+                            var opacity = (1 - distance / maxDist) * 0.15;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = 'rgba(232, 201, 176, ' + opacity + ')';
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for (var i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                }
+                
+                drawLines();
+                animationId = requestAnimationFrame(animateParticles);
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            canvas.addEventListener('mouseleave', function() {
+                mouseX = null;
+                mouseY = null;
+            });
+
+            canvas.addEventListener('touchmove', function(e) {
+                var touch = e.touches[0];
+                mouseX = touch.clientX;
+                mouseY = touch.clientY;
+            }, { passive: true });
+
+            canvas.addEventListener('touchend', function() {
+                mouseX = null;
+                mouseY = null;
+            }, { passive: true });
+
+            animateParticles();
+
+            // =====================
+            // KLIK FOTO SUPPORT
+            // =====================
+            var supportPhoto = document.getElementById('supportPhoto');
+            supportPhoto.addEventListener('click', function() {
+                alert('🙏 Terima Kasih Keluarga Tercinta!\n\n' +
+                      'Terima kasih atas semua cinta, doa, dan dukungan\n' +
+                      'yang tak pernah henti untukku.\n\n' +
+                      'Kalian adalah bagian terindah dari kenangan ini.\n\n' +
+                      '♥  Terima kasih dari hati  ♥');
+            });
+
+            // =====================
+            // MUSIK
+            // =====================
+            var audio = null;
+            var isMusicPlaying = false;
+            var musicControl = document.getElementById('musicControl');
+            var musicLoading = document.getElementById('musicLoading');
+            var musicIcon = musicControl.querySelector('.icon');
+
+            var musicUrls = [
+                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+            ];
+
+            var currentMusicIndex = 0;
+
+            function playMusic() {
+                if (audio) {
+                    audio.pause();
+                    audio = null;
+                }
+
+                musicLoading.classList.add('visible');
+                
+                audio = new Audio(musicUrls[currentMusicIndex]);
+                audio.loop = true;
+                audio.volume = 0.5;
+
+                audio.addEventListener('canplaythrough', function() {
+                    musicLoading.classList.remove('visible');
+                    audio.play().then(function() {
+                        isMusicPlaying = true;
+                        musicControl.classList.add('visible');
+                        musicControl.classList.remove('paused');
+                        musicIcon.textContent = '🔊';
+                    }).catch(function(err) {
+                        console.log('Autoplay diblokir');
+                        musicLoading.classList.remove('visible');
+                    });
+                });
+
+                audio.addEventListener('error', function(e) {
+                    console.log('Error memuat musik, coba yang lain');
+                    musicLoading.classList.remove('visible');
+                    currentMusicIndex = (currentMusicIndex + 1) % musicUrls.length;
+                    setTimeout(function() {
+                        playMusic();
+                    }, 1000);
+                });
+
+                audio.load();
+            }
+
+            function toggleMusic() {
+                if (!audio) {
+                    playMusic();
+                    return;
+                }
+
+                if (isMusicPlaying) {
+                    audio.pause();
+                    isMusicPlaying = false;
+                    musicControl.classList.add('paused');
+                    musicIcon.textContent = '🔇';
+                } else {
+                    audio.play().then(function() {
+                        isMusicPlaying = true;
+                        musicControl.classList.remove('paused');
+                        musicIcon.textContent = '🔊';
+                    }).catch(function(err) {
+                        console.log('Gagal melanjutkan musik');
+                    });
+                }
+            }
+
+            musicControl.addEventListener('click', toggleMusic);
+
+            // =====================
+            // OVERLAY SAMBUTAN
+            // =====================
+            var overlay = document.getElementById('welcomeOverlay');
+            var enterBtn = document.getElementById('enterBtn');
+            var mainContainer = document.getElementById('mainContainer');
+
+            var hasVisited = sessionStorage.getItem('hasVisited');
+
+            if (hasVisited) {
+                overlay.classList.add('hidden');
+                mainContainer.classList.add('visible');
+                setTimeout(function() {
+                    playMusic();
+                }, 500);
+                setTimeout(function() {
+                    initSlideshow();
+                }, 300);
+            } else {
+                overlay.classList.remove('hidden');
+                
+                enterBtn.addEventListener('click', function() {
+                    overlay.classList.add('hidden');
+                    mainContainer.classList.add('visible');
+                    sessionStorage.setItem('hasVisited', 'true');
+                    
+                    playMusic();
+                    
+                    setTimeout(function() {
+                        initSlideshow();
+                    }, 800);
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !overlay.classList.contains('hidden')) {
+                        enterBtn.click();
+                    }
+                });
+            }
+
+            // =====================
+            // SLIDESHOW
+            // =====================
+            var slideshowInitialized = false;
+
+            function initSlideshow() {
+                if (slideshowInitialized) return;
+                slideshowInitialized = true;
+
+                var track = document.getElementById('slidesTrack');
+                var slides = document.querySelectorAll('.slide');
+                var total = slides.length;
+                var indicators = document.getElementById('indicators');
+                var prevBtn = document.getElementById('prevBtn');
+                var nextBtn = document.getElementById('nextBtn');
+                var currentSlide = document.getElementById('currentSlide');
+                var totalSlides = document.getElementById('totalSlides');
+                var progressBar = document.getElementById('progressBar');
+                var wrapper = document.getElementById('slideshowWrapper');
+
+                var currentIndex = 0;
+                var isAnimating = false;
+                var autoplayInterval = null;
+                var touchStartX = 0;
+                var isDragging = false;
+                var AUTOPLAY_DELAY = 5000;
+
+                totalSlides.textContent = total;
+
+                for (var i = 0; i < total; i++) {
+                    var dot = document.createElement('button');
+                    dot.className = 'dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('data-index', i);
+                    dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+                    
+                    (function(index) {
+                        dot.addEventListener('click', function() {
+                            goToSlide(index);
+                            resetAutoplay();
+                        });
+                    })(i);
+                    
+                    indicators.appendChild(dot);
+                }
+
+                // KLIK FOTO
+                for (var s = 0; s < slides.length; s++) {
+                    (function(index) {
+                        var slide = slides[index];
+                        slide.addEventListener('click', function(e) {
+                            if (e.target.closest('.nav-btn')) return;
+                            
+                            var caption = this.querySelector('.slide-caption');
+                            var captionText = '';
+                            if (caption) {
+                                var mainText = caption.childNodes[0] ? caption.childNodes[0].textContent.trim() : '';
+                                var smallText = caption.querySelector('small') ? caption.querySelector('small').textContent.trim() : '';
+                                captionText = mainText + (smallText ? '\n' + smallText : '');
+                            }
+                            
+                            if (!captionText) {
+                                captionText = 'Kenangan indah #' + (index + 1);
+                            }
+                            
+                            alert('📸 Kenangan #' + (index + 1) + '\n\n' + captionText + '\n\n— terima kasih untuk semua momen —');
+                        });
+                    })(s);
+                }
+
+                function goToSlide(index, instant) {
+                    instant = instant || false;
+                    if (isAnimating || index === currentIndex) return;
+                    if (index < 0) index = total - 1;
+                    if (index >= total) index = 0;
+
+                    isAnimating = true;
+                    currentIndex = index;
+
+                    track.style.transition = instant ? 'none' : 'transform 0.7s cubic-bezier(0.65, 0, 0.35, 1)';
+                    track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+
+                    var dots = document.querySelectorAll('.dot');
+                    for (var d = 0; d < dots.length; d++) {
+                        dots[d].classList.toggle('active', d === currentIndex);
+                    }
+
+                    currentSlide.textContent = currentIndex + 1;
+                    resetProgress();
+
+                    setTimeout(function() {
+                        isAnimating = false;
+                        if (!instant) {
+                            track.style.transition = 'transform 0.7s cubic-bezier(0.65, 0, 0.35, 1)';
+                        }
+                    }, instant ? 50 : 750);
+                }
+
+                function nextSlide() {
+                    goToSlide(currentIndex + 1);
+                }
+
+                function prevSlide() {
+                    goToSlide(currentIndex - 1);
+                }
+
+                function resetProgress() {
+                    progressBar.style.width = '0%';
+                    progressBar.style.transition = 'none';
+                    
+                    setTimeout(function() {
+                        progressBar.style.transition = 'width ' + AUTOPLAY_DELAY + 'ms linear';
+                        progressBar.style.width = '100%';
+                    }, 300);
+                }
+
+                function startAutoplay() {
+                    stopAutoplay();
+                    resetProgress();
+                    autoplayInterval = setInterval(function() {
+                        nextSlide();
+                    }, AUTOPLAY_DELAY + 300);
+                }
+
+                function stopAutoplay() {
+                    if (autoplayInterval) {
+                        clearInterval(autoplayInterval);
+                        autoplayInterval = null;
+                    }
+                }
+
+                function resetAutoplay() {
+                    stopAutoplay();
+                    startAutoplay();
+                }
+
+                prevBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    prevSlide();
+                    resetAutoplay();
+                });
+
+                nextBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    nextSlide();
+                    resetAutoplay();
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        nextSlide();
+                        resetAutoplay();
+                    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        prevSlide();
+                        resetAutoplay();
+                    }
+                });
+
+                wrapper.addEventListener('touchstart', function(e) {
+                    touchStartX = e.changedTouches[0].screenX;
+                    isDragging = true;
+                    stopAutoplay();
+                }, { passive: true });
+
+                wrapper.addEventListener('touchmove', function(e) {
+                    if (!isDragging) return;
+                    var currentX = e.changedTouches[0].screenX;
+                    var diff = currentX - touchStartX;
+                    var offset = -currentIndex * 100 + (diff / wrapper.offsetWidth) * 100;
+                    track.style.transition = 'none';
+                    track.style.transform = 'translateX(' + offset + '%)';
+                }, { passive: true });
+
+                wrapper.addEventListener('touchend', function(e) {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    var touchEndX = e.changedTouches[0].screenX;
+                    var diff = touchEndX - touchStartX;
+                    var threshold = 30;
+
+                    track.style.transition = 'transform 0.7s cubic-bezier(0.65, 0, 0.35, 1)';
+
+                    if (Math.abs(diff) > threshold) {
+                        if (diff < 0) {
+                            nextSlide();
+                        } else {
+                            prevSlide();
+                        }
+                    } else {
+                        goToSlide(currentIndex);
+                    }
+
+                    resetAutoplay();
+                }, { passive: true });
+
+                wrapper.addEventListener('mouseenter', stopAutoplay);
+                wrapper.addEventListener('mouseleave', startAutoplay);
+
+                var resizeTimeout;
+                window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(function() {
+                        track.style.transition = 'none';
+                        track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+                        setTimeout(function() {
+                            track.style.transition = 'transform 0.7s cubic-bezier(0.65, 0, 0.35, 1)';
+                        }, 50);
+                    }, 200);
+                });
+
+                goToSlide(0, true);
+                setTimeout(function() {
+                    startAutoplay();
+                }, 500);
+
+                console.log('✨ Kenangan Perpisahan — Elegant Slideshow');
+                console.log('📸 Klik foto untuk melihat pesan kenangan');
+                console.log('⌨️  Gunakan panah kiri/kanan untuk navigasi');
+                console.log('🎵 Musik diputar otomatis!');
+                console.log('✨ Partikel animasi aktif!');
+                console.log('🙏 Klik foto support untuk ucapan terima kasih!');
+                console.log('🕐 Jam dan hari real-time di kiri atas!');
+            }
+
+        })();
+    </script>
+
+</body>
+</html>
